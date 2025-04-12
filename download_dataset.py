@@ -12,8 +12,8 @@ image_dir = "../data/m3it_v0/coco"
 os.makedirs(image_dir, exist_ok=True)
 vlm_dict_lst = []
 for i in tqdm(range(len(dataset["train"]))):
-    if i > 249:
-        break
+    # if i > 249:
+    #     break
     img_base64 = dataset["train"][i]["image_base64_str"]
     image_list = []
     for j in range(len(img_base64)):
@@ -22,7 +22,7 @@ for i in tqdm(range(len(dataset["train"]))):
         image_name = f"{i:09d}_{j:04d}.jpg"
         image_path = f"{image_dir}/{image_name}"
         img.save(image_path)
-        image_list.append(f"m3it_v0/coco/{image_name}")
+        image_list.append(f"{image_dir}/{image_name}")
     #
     instruction = dataset["train"][i]["instruction"]
     input = dataset["train"][i]["inputs"]
