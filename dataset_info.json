@@ -681,7 +681,7 @@
     "folder": "python"
   },
   "vlm_ft": {
-    "file_name": "../data/m3it_v0/vlm1.json",
+    "file_name": "../../data/m3it_v0/vlm1.json",
     "formatting": "sharegpt",
     "columns": {
       "messages": "messages",
