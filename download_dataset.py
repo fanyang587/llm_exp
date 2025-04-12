@@ -7,7 +7,7 @@ import os
 from tqdm import tqdm
 
 ds_name = "coco"  # change the dataset name here
-dataset = load_dataset("MMInstruction/M3IT", ds_name, trust_remote_code=True, cache_dir="../data/m3it")
+dataset = load_dataset("MMInstruction/M3IT", ds_name, trust_remote_code=True, cache_dir="../dataset/m3it")
 image_dir = "../data/m3it_v0/coco"
 os.makedirs(image_dir, exist_ok=True)
 vlm_dict_lst = []
