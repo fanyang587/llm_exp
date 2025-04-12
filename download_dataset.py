@@ -15,8 +15,8 @@ os.makedirs(image_dir, exist_ok=True)
 vlm_dict_lst = []
 print("开始转换数据")
 for i in tqdm(range(len(dataset["train"]))):
-    # if i > 249:
-    #     break
+    if i > 100:
+        break
     img_base64 = dataset["train"][i]["image_base64_str"]
     image_list = []
     for j in range(len(img_base64)):
