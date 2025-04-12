@@ -31,7 +31,7 @@ for i in tqdm(range(len(dataset["train"]))):
     input = dataset["train"][i]["inputs"]
     output = dataset["train"][i]["outputs"]
     vlm_dict = {
-        "message": [
+        "messages": [
             {
                 "content": f"<image>{instruction}",
                 "role": "user",
