@@ -353,15 +353,16 @@ sa32 = 0.5
 sa64 = 0.5
 id_length = 4
 num_steps = 50
-general_prompt = "a man with a black suit"
+general_prompt = "Mickey Mouse, wearing red shorts and yellow shoes"
 negative_prompt = "naked, deformed, bad anatomy, disfigured, poorly drawn face, mutation, extra limb, ugly, disgusting, poorly drawn hands, missing limb, floating limbs, disconnected limbs, blurry, watermarks, oversaturated, distorted hands, amputation"
-prompt_array = ["wake up in the bed",
-                "have breakfast",
-                "is on the road, go to the company",
-                "work in the company",
-                "running in the playground",
-                "reading book in the home"
-                ]
+prompt_array = [
+    "wakes up in his cozy bed at home",
+    "enjoys a cheerful breakfast with Pluto",
+    "walks through the sunny forest on the way to Minnie’s house",
+    "helps Goofy fix a toy in the workshop",
+    "plays catch with Donald Duck in the backyard",
+    "relaxes on the couch reading a comic book in the evening"
+]
 
 def apply_style_positive(style_name: str, positive: str):
     p, n = styles.get(style_name, styles[DEFAULT_STYLE_NAME])
@@ -370,7 +371,7 @@ def apply_style(style_name: str, positives: list, negative: str = ""):
     p, n = styles.get(style_name, styles[DEFAULT_STYLE_NAME])
     return [p.replace("{prompt}", positive) for positive in positives], n + ' ' + negative
 ### Set the generated Style
-style_name = "Comic book"
+style_name = "Pixar/Disney Character"
 setup_seed(seed)
 generator = torch.Generator(device="cuda").manual_seed(seed)
 prompts = [general_prompt+","+prompt for prompt in prompt_array]
