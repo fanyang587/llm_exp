@@ -318,7 +318,7 @@ global pipe
 global sd_model_path
 sd_model_path = models_dict["RealVision"] #"SG161222/RealVisXL_V4.0"
 ### LOAD Stable Diffusion Pipeline
-pipe = StableDiffusionXLPipeline.from_pretrained(sd_model_path, torch_dtype=torch.float16, use_safetensors=False)
+pipe = StableDiffusionXLPipeline.from_pretrained(sd_model_path, torch_dtype=torch.float16, use_safetensors=True)
 pipe = pipe.to(device)
 pipe.enable_freeu(s1=0.6, s2=0.4, b1=1.1, b2=1.2)
 pipe.scheduler = DDIMScheduler.from_config(pipe.scheduler.config)
@@ -381,7 +381,10 @@ write = True
 cur_step = 0
 attn_count = 0
 id_prompts, negative_prompt = apply_style(style_name, id_prompts, negative_prompt)
-id_images = pipe(id_prompts, num_inference_steps = num_steps, guidance_scale=guidance_scale,  height = height, width = width,negative_prompt = negative_prompt,generator = generator).images
+id_images = pipe(id_prompts, num_inference_steps=num_steps, guidance_scale=guidance_scale,
+                 height=height, width=width,
+                 negative_prompt=negative_prompt,
+                 generator = generator).images
 
 write = False
 for id_image in id_images:
