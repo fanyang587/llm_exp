@@ -446,9 +446,11 @@ id_images = pipe(id_prompts, num_inference_steps=num_steps, guidance_scale=guida
 
 write = False
 save_dir = "comic_gen"
+id_prompt_array = prompt_array[:id_length]
+real_prompt_array = prompt_array[id_length:]
 os.makedirs(save_dir, exist_ok=True)
 for i, id_image in enumerate(id_images):
-    id_image_txt = add_wrapped_text_below_image(id_image, id_prompts[i], font_path="robot.ttf",font_size=60, padding=10,
+    id_image_txt = add_wrapped_text_below_image(id_image, id_prompt_array[i], font_path="robot.ttf",font_size=60, padding=10,
                                    text_color=(0, 0, 0), bg_color=(255, 255, 255))
     id_image_txt.save(f"{save_dir}/comic_id_{i:03d}.png")
 real_images = []
@@ -457,6 +459,6 @@ for real_prompt in real_prompts:
     real_prompt = apply_style_positive(style_name, real_prompt)
     real_images.append(pipe(real_prompt,  num_inference_steps=num_steps, guidance_scale=guidance_scale,  height = height, width = width,negative_prompt = negative_prompt,generator = generator).images[0])
 for i, real_image in enumerate(real_images):
-    real_image_txt = add_wrapped_text_below_image(real_image, real_prompt[i], font_path="robot.ttf", font_size=60, padding=10,
+    real_image_txt = add_wrapped_text_below_image(real_image, real_prompt_array[i], font_path="robot.ttf", font_size=60, padding=10,
                                  text_color=(0, 0, 0), bg_color=(255, 255, 255))
     real_image_txt.save(f"{save_dir}/comic_real_{i:03d}.png")
