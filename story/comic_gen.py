@@ -3,6 +3,7 @@ import numpy as np
 import torch
 import requests
 import random
+from PIL import Image, ImageDraw, ImageFont
 import os
 import sys
 import pickle
@@ -27,6 +28,62 @@ from diffusers.utils import load_image
 from utils.utils import get_comic
 from utils.style_template import styles
 
+
+#####
+def add_wrapped_text_below_image(image, text, font_path=None, font_size=36, padding=10,
+                                  text_color=(0, 0, 0), bg_color=(255, 255, 255), max_width=None):
+    """
+    在图像底部添加自动换行的文字区域，不遮挡原图。
+    """
+    w, h = image.size
+    max_width = max_width or w  # 如果未指定最大宽度，使用图像宽度
+    font = ImageFont.truetype(font_path, font_size) if font_path else ImageFont.load_default()
+
+    # 创建临时画布进行文本绘制和尺寸估计
+    dummy_img = Image.new("RGB", (w, 100))
+    draw = ImageDraw.Draw(dummy_img)
+
+    # 自动换行逻辑
+    def wrap_text(text, font, draw, max_width):
+        words = text.split()
+        lines = []
+        line = ""
+        for word in words:
+            test_line = f"{line} {word}".strip()
+            bbox = draw.textbbox((0, 0), test_line, font=font)
+            line_width = bbox[2] - bbox[0]
+            if line_width <= max_width:
+                line = test_line
+            else:
+                lines.append(line)
+                line = word
+        if line:
+            lines.append(line)
+        return lines
+
+    lines = wrap_text(text, font, draw, max_width)
+
+    # 计算总高度
+    line_height = draw.textbbox((0, 0), "Test", font=font)[3]
+    total_text_height = len(lines) * (line_height + padding) + padding
+
+    # 创建新图像：原图 + 文字区域
+    new_height = h + total_text_height
+    new_image = Image.new("RGB", (w, new_height), bg_color)
+    new_image.paste(image, (0, 0))
+
+    # 绘制文本
+    draw_new = ImageDraw.Draw(new_image)
+    y = h + padding
+    for line in lines:
+        bbox = draw_new.textbbox((0, 0), line, font=font)
+        text_width = bbox[2] - bbox[0]
+        x = (w - text_width) // 2
+        draw_new.text((x, y), line, font=font, fill=text_color)
+        y += line_height + padding
+
+    return new_image
+####
 ## Global
 STYLE_NAMES = list(styles.keys())
 DEFAULT_STYLE_NAME = "(No style)"
@@ -391,11 +448,15 @@ write = False
 save_dir = "comic_gen"
 os.makedirs(save_dir, exist_ok=True)
 for i, id_image in enumerate(id_images):
-    id_image.save(f"{save_dir}/comic_id_{i:03d}.png")
+    id_image_txt = add_wrapped_text_below_image(id_image, id_prompts[i], font_path="robot.ttf",font_size=60, padding=10,
+                                   text_color=(0, 0, 0), bg_color=(255, 255, 255))
+    id_image_txt.save(f"{save_dir}/comic_id_{i:03d}.png")
 real_images = []
 for real_prompt in real_prompts:
     cur_step = 0
     real_prompt = apply_style_positive(style_name, real_prompt)
     real_images.append(pipe(real_prompt,  num_inference_steps=num_steps, guidance_scale=guidance_scale,  height = height, width = width,negative_prompt = negative_prompt,generator = generator).images[0])
 for i, real_image in enumerate(real_images):
-    real_image.save(f"{save_dir}/comic_real_{i:03d}.png")
+    real_image_txt = add_wrapped_text_below_image(real_image, real_prompt[i], font_path="robot.ttf", font_size=60, padding=10,
+                                 text_color=(0, 0, 0), bg_color=(255, 255, 255))
+    real_image_txt.save(f"{save_dir}/comic_real_{i:03d}.png")
