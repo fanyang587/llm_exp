@@ -384,15 +384,17 @@ id_prompts, negative_prompt = apply_style(style_name, id_prompts, negative_promp
 id_images = pipe(id_prompts, num_inference_steps=num_steps, guidance_scale=guidance_scale,
                  height=height, width=width,
                  negative_prompt=negative_prompt,
-                 generator = generator).images
+                 generator=generator).images
 
 write = False
-for id_image in id_images:
-    display(id_image)
+save_dir = "comic_gen"
+os.makedirs(save_dir, exist_ok=True)
+for i, id_image in enumerate(id_images):
+    id_image.save(f"{save_dir}/comic_id_{i:03d}.png")
 real_images = []
 for real_prompt in real_prompts:
     cur_step = 0
     real_prompt = apply_style_positive(style_name, real_prompt)
     real_images.append(pipe(real_prompt,  num_inference_steps=num_steps, guidance_scale=guidance_scale,  height = height, width = width,negative_prompt = negative_prompt,generator = generator).images[0])
-for real_image in real_images:
-    display(real_image)
+for i, real_image in enumerate(real_images):
+    real_image.save(f"{save_dir}/comic_real_{i:03d}.png")
