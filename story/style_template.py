@@ -21,7 +21,7 @@ style_list = [
     },
     {
         "name": "Disney comic",
-        "prompt": "Create a Disney style illustration on {prompt} . The scene is vibrant, motivational, filled with vivid colors and a sense of wonder.",
+        "prompt": "Create a Disney-style comic on {prompt}.",
         "negative_prompt": "lowres, bad anatomy, bad hands, text, bad eyes, bad arms, bad legs, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, blurry, grayscale, noisy, sloppy, messy, grainy",
     },
     {
