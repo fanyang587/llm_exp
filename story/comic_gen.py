@@ -379,32 +379,32 @@ sd_model_path = models_dict["RealVision"] #"SG161222/RealVisXL_V4.0"
 # pipe = StableDiffusionXLPipeline.from_pretrained(sd_model_path, torch_dtype=torch.float16, use_safetensors=True)
 pipe = StableDiffusion3Pipeline.from_pretrained("stabilityai/stable-diffusion-3.5-large", torch_dtype=torch.bfloat16)
 pipe = pipe.to(device)
-pipe.enable_freeu(s1=0.6, s2=0.4, b1=1.1, b2=1.2)
-pipe.scheduler = DDIMScheduler.from_config(pipe.scheduler.config)
-pipe.scheduler.set_timesteps(50)
-unet = pipe.unet
+# pipe.enable_freeu(s1=0.6, s2=0.4, b1=1.1, b2=1.2)
+# pipe.scheduler = DDIMScheduler.from_config(pipe.scheduler.config)
+# pipe.scheduler.set_timesteps(50)
+# unet = pipe.unet
 
 ### Insert PairedAttention
-for name in unet.attn_processors.keys():
-    cross_attention_dim = None if name.endswith("attn1.processor") else unet.config.cross_attention_dim
-    if name.startswith("mid_block"):
-        hidden_size = unet.config.block_out_channels[-1]
-    elif name.startswith("up_blocks"):
-        block_id = int(name[len("up_blocks.")])
-        hidden_size = list(reversed(unet.config.block_out_channels))[block_id]
-    elif name.startswith("down_blocks"):
-        block_id = int(name[len("down_blocks.")])
-        hidden_size = unet.config.block_out_channels[block_id]
-    if cross_attention_dim is None and (name.startswith("up_blocks") ) :
-        attn_procs[name] = SpatialAttnProcessor2_0(id_length=id_length)
-        total_count +=1
-    else:
-        attn_procs[name] = AttnProcessor()
-print("successsfully load consistent self-attention")
-print(f"number of the processor : {total_count}")
-unet.set_attn_processor(copy.deepcopy(attn_procs))
-global mask1024,mask4096
-mask1024, mask4096 = cal_attn_mask_xl(total_length,id_length,sa32,sa64,height,width,device=device,dtype= torch.float16)
+# for name in unet.attn_processors.keys():
+#     cross_attention_dim = None if name.endswith("attn1.processor") else unet.config.cross_attention_dim
+#     if name.startswith("mid_block"):
+#         hidden_size = unet.config.block_out_channels[-1]
+#     elif name.startswith("up_blocks"):
+#         block_id = int(name[len("up_blocks.")])
+#         hidden_size = list(reversed(unet.config.block_out_channels))[block_id]
+#     elif name.startswith("down_blocks"):
+#         block_id = int(name[len("down_blocks.")])
+#         hidden_size = unet.config.block_out_channels[block_id]
+#     if cross_attention_dim is None and (name.startswith("up_blocks") ) :
+#         attn_procs[name] = SpatialAttnProcessor2_0(id_length=id_length)
+#         total_count +=1
+#     else:
+#         attn_procs[name] = AttnProcessor()
+# print("successsfully load consistent self-attention")
+# print(f"number of the processor : {total_count}")
+# unet.set_attn_processor(copy.deepcopy(attn_procs))
+# global mask1024,mask4096
+# mask1024, mask4096 = cal_attn_mask_xl(total_length,id_length,sa32,sa64,height,width,device=device,dtype= torch.float16)
 
 guidance_scale = 4.5
 seed = 2047
