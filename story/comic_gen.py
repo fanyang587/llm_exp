@@ -19,6 +19,7 @@ else:
 
 import diffusers
 from diffusers import StableDiffusionXLPipeline
+from diffusers import StableDiffusion3Pipeline
 from diffusers import DDIMScheduler
 import torch.nn.functional as F
 from utils.gradio_utils import cal_attn_mask_xl
@@ -368,14 +369,15 @@ write = False
 sa32 = 0.5
 sa64 = 0.5
 ### Res. of the Generated Comics. Please Note: SDXL models may do worse in a low-resolution!
-height = 768
-width = 768
+height = 512
+width = 512
 ###
 global pipe
 global sd_model_path
 sd_model_path = models_dict["RealVision"] #"SG161222/RealVisXL_V4.0"
 ### LOAD Stable Diffusion Pipeline
-pipe = StableDiffusionXLPipeline.from_pretrained(sd_model_path, torch_dtype=torch.float16, use_safetensors=True)
+# pipe = StableDiffusionXLPipeline.from_pretrained(sd_model_path, torch_dtype=torch.float16, use_safetensors=True)
+pipe = StableDiffusion3Pipeline.from_pretrained("stabilityai/stable-diffusion-3.5-large", torch_dtype=torch.bfloat16)
 pipe = pipe.to(device)
 pipe.enable_freeu(s1=0.6, s2=0.4, b1=1.1, b2=1.2)
 pipe.scheduler = DDIMScheduler.from_config(pipe.scheduler.config)
@@ -394,7 +396,7 @@ for name in unet.attn_processors.keys():
         block_id = int(name[len("down_blocks.")])
         hidden_size = unet.config.block_out_channels[block_id]
     if cross_attention_dim is None and (name.startswith("up_blocks") ) :
-        attn_procs[name] =  SpatialAttnProcessor2_0(id_length = id_length)
+        attn_procs[name] = SpatialAttnProcessor2_0(id_length=id_length)
         total_count +=1
     else:
         attn_procs[name] = AttnProcessor()
@@ -404,13 +406,13 @@ unet.set_attn_processor(copy.deepcopy(attn_procs))
 global mask1024,mask4096
 mask1024, mask4096 = cal_attn_mask_xl(total_length,id_length,sa32,sa64,height,width,device=device,dtype= torch.float16)
 
-guidance_scale = 5.0
+guidance_scale = 4.5
 seed = 2047
 sa32 = 0.5
 sa64 = 0.5
 id_length = 4
-num_steps = 50
-general_prompt = "Mickey Mouse, wearing red shorts and yellow shoes"
+num_steps = 40
+# general_prompt = "Mickey Mouse, wearing red shorts and yellow shoes"
 negative_prompt = "naked, deformed, bad anatomy, disfigured, poorly drawn face, mutation, extra limb, ugly, disgusting, poorly drawn hands, missing limb, floating limbs, disconnected limbs, blurry, watermarks, oversaturated, distorted hands, amputation"
 prompt_array = [
     "Bugs Bunny and Mickey stand excitedly at the entrance of Disneyland.",
@@ -431,7 +433,7 @@ def apply_style(style_name: str, positives: list, negative: str = ""):
 style_name = "Disney comic"
 setup_seed(seed)
 generator = torch.Generator(device="cuda").manual_seed(seed)
-prompts = [general_prompt+","+prompt for prompt in prompt_array]
+prompts = [prompt for prompt in prompt_array]
 id_prompts = prompts[:id_length]
 real_prompts = prompts[id_length:]
 torch.cuda.empty_cache()
