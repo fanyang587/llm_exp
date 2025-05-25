@@ -417,10 +417,10 @@ negative_prompt = "naked, deformed, bad anatomy, disfigured, poorly drawn face, 
 prompt_array = [
     "Bugs Bunny and Mickey stand excitedly at the entrance of Disneyland.",
     "They ride a rollercoaster, Bugs throws his carrot in the air.",
-    "Bugs gets stuck inside a teacup ride, dizzy-eyed.",
-    "Mickey pulls Bugs out of a popcorn machine, both covered in popcorn.",
-    "They meet a crowd of fans asking for photos.",
-    "The two friends watch the fireworks, smiling under the night sky."
+    "Bugs Bunny gets stuck inside a teacup ride, dizzy-eyed.",
+    "Mickey mouse pulls Bugs Bunny out of a popcorn machine, both covered in popcorn.",
+    "Bugs Bunny and Mickey meet a crowd of fans asking for photos.",
+    "Bugs Bunny and Mickey watch the fireworks, smiling under the night sky."
 ]
 
 def apply_style_positive(style_name: str, positive: str):
