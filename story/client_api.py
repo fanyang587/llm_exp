@@ -62,7 +62,29 @@ def generate_chapters_and_descriptions(beginning: str, protagonist: str, num: in
     return data
 
 # ================================
-# 4. Image Generation
+# 4. Image Generation (Disney Style)
+# ================================
+def generate_comic_images(entries, output_dir: str = "comic_images"):
+    """
+    Generate and save Disney-style comic images for each entry using SD3.5.
+    entries: list of {'chapter', 'description'}
+    """
+    os.makedirs(output_dir, exist_ok=True)
+    for i, item in enumerate(entries, start=1):
+        desc = item['description']
+        # Append Disney style cue to the prompt
+        prompt = f"{desc}, Disney style, children's comic illustration"
+        image = sd_pipe(
+            prompt,
+            num_inference_steps=28,
+            guidance_scale=7.5
+        ).images[0]
+        path = os.path.join(output_dir, f"chapter_{i}.png")
+        image.save(path)
+        print(f"Saved image: {path} - {prompt}")
+
+# ================================
+# 5. Main Flow
 # ================================
 def generate_comic_images(entries, output_dir: str = "comic_images"):
     """
