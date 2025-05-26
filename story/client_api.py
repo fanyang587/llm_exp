@@ -77,7 +77,7 @@ def generate_comic_images(entries, output_dir: str = "comic_images"):
         image = sd_pipe(
             prompt,
             num_inference_steps=28,
-            guidance_scale=7.5
+            guidance_scale=3.5
         ).images[0]
         path = os.path.join(output_dir, f"chapter_{i}.png")
         image.save(path)
