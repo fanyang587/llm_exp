@@ -2,7 +2,7 @@ import os
 import textwrap
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
-from diffusers import StableDiffusionPipeline
+from diffusers import StableDiffusion3Pipeline
 
 # ================================
 # 1. Qwen 2.5-7B Instruct Setup
@@ -25,7 +25,7 @@ qwen_pipe = pipeline(
 # 2. Stable Diffusion 3.5 Setup
 # ================================
 SD_MODEL = "stabilityai/stable-diffusion-3.5-large"
-sd_pipe = StableDiffusionPipeline.from_pretrained(
+sd_pipe = StableDiffusion3Pipeline.from_pretrained(
     SD_MODEL,
     torch_dtype=torch.bfloat16,
 )
@@ -86,8 +86,8 @@ def generate_comic_images(descriptions: list[str], output_dir: str = "comic_imag
     for idx, desc in enumerate(descriptions, start=1):
         image = sd_pipe(
             desc,
-            num_inference_steps=30,
-            guidance_scale=7.5
+            num_inference_steps=28,
+            guidance_scale=3.5
         ).images[0]
         path = os.path.join(output_dir, f"chapter_{idx}.png")
         image.save(path)
