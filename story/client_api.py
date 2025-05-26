@@ -34,17 +34,17 @@ sd_pipe.to("cuda")
 # ================================
 # 3. Combined Generation Function
 # ================================
-def generate_chapters_and_descriptions(beginning: str, num: int = 8):
+def generate_chapters_and_descriptions(beginning: str, protagonist: str, num: int = 8):
     """
-    Use Qwen to continue the story, split into `num` chapters,
-    and produce a concise (~10-word) description for each.
-    Returns a list of dicts: [{'chapter': str, 'description': str}, ...]
+    Continue story, split into `num` chapters,
+    and generate concise (~10-word) descriptions mentioning the protagonist.
+    Returns list of dicts: [{'chapter': str, 'description': str}, ...]
     """
     prompt = (
         f"Continue this story and split into {num} chapters. "
-        f"Then for each chapter, write a concise (~10-word) scene description. "
+        f"Then for each chapter, write a concise (~10-word) scene description that includes the protagonist '{protagonist}'. "
         f"Output a JSON list of objects with 'chapter' and 'description'.\n"
-        f"Story: {beginning}\nOutput:"
+        f"Story start: {beginning}\nOutput:"
     )
     result = qwen_pipe(
         prompt,
@@ -85,8 +85,9 @@ def generate_comic_images(entries, output_dir: str = "comic_images"):
 # 5. Main Flow
 # ================================
 if __name__ == "__main__":
-    start = input("Enter the story beginning: ")
-    entries = generate_chapters_and_descriptions(start)
+    beginning = input("Enter the story beginning: ")
+    protagonist = input("Enter the protagonist's name: ")
+    entries = generate_chapters_and_descriptions(beginning, protagonist)
     print("\nGenerated chapters and descriptions:")
     for i, e in enumerate(entries, start=1):
         print(f"{i}. {e['chapter']}\n   -> {e['description']}")
