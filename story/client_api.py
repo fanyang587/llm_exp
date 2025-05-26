@@ -1,5 +1,5 @@
 import os
-import textwrap
+import json
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 from diffusers import StableDiffusion3Pipeline
@@ -22,7 +22,7 @@ qwen_pipe = pipeline(
 )
 
 # ================================
-# 2. Stable Diffusion 3.5 Setup
+# 2. Stable Diffusion 3.5 Large Setup
 # ================================
 SD_MODEL = "stabilityai/stable-diffusion-3.5-large"
 sd_pipe = StableDiffusion3Pipeline.from_pretrained(
@@ -32,83 +32,64 @@ sd_pipe = StableDiffusion3Pipeline.from_pretrained(
 sd_pipe.to("cuda")
 
 # ================================
-# 3. Functions
+# 3. Combined Generation Function
 # ================================
-def generate_full_story(prompt: str) -> str:
+def generate_chapters_and_descriptions(beginning: str, num: int = 8):
     """
-    Use Qwen to continue the story.
+    Use Qwen to continue the story, split into `num` chapters,
+    and produce a concise (~10-word) description for each.
+    Returns a list of dicts: [{'chapter': str, 'description': str}, ...]
     """
-    output = qwen_pipe(
+    prompt = (
+        f"Continue this story and split into {num} chapters. "
+        f"Then for each chapter, write a concise (~10-word) scene description. "
+        f"Output a JSON list of objects with 'chapter' and 'description'.\n"
+        f"Story: {beginning}\nOutput:"
+    )
+    result = qwen_pipe(
         prompt,
-        max_new_tokens=512,
+        max_new_tokens=1024,
         do_sample=True,
         temperature=0.8
     )
-    return output[0]["generated_text"].strip()
+    text = result[0]["generated_text"].strip()
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError:
+        start = text.find('[')
+        end = text.rfind(']') + 1
+        data = json.loads(text[start:end])
+    return data
 
-
-def split_into_chapters(story: str, num_chapters: int = 8) -> list[str]:
+# ================================
+# 4. Image Generation
+# ================================
+def generate_comic_images(entries, output_dir: str = "comic_images"):
     """
-    Split the story text evenly into num_chapters parts.
-    """
-    length = max(1, len(story) // num_chapters)
-    return textwrap.wrap(story, width=length)
-
-
-def generate_scene_descriptions(chapters: list[str]) -> list[str]:
-    """
-    Generate concise (~10 words) scene descriptions in English for each chapter.
-    """
-    descriptions = []
-    for i, chap in enumerate(chapters, start=1):
-        prompt = (
-            f"Write a concise children's comic scene description of about 10 words for the following text:\n"
-            f"Chapter {i}: {chap}\n"
-            f"Description:"
-        )
-        out = qwen_pipe(
-            prompt,
-            max_new_tokens=30,
-            do_sample=False,
-            temperature=0.7
-        )
-        # Take first line of output
-        desc = out[0]["generated_text"].strip().split("\n")[0]
-        descriptions.append(desc)
-    return descriptions
-
-
-def generate_comic_images(descriptions: list[str], output_dir: str = "comic_images") -> None:
-    """
-    Generate children's comic images using Stable Diffusion 3.5.
+    Generate and save images for each entry using SD3.5.
+    entries: list of {'chapter', 'description'}
     """
     os.makedirs(output_dir, exist_ok=True)
-    for idx, desc in enumerate(descriptions, start=1):
+    for i, item in enumerate(entries, start=1):
+        desc = item['description']
         image = sd_pipe(
             desc,
             num_inference_steps=28,
-            guidance_scale=3.5
+            guidance_scale=7.5
         ).images[0]
-        path = os.path.join(output_dir, f"chapter_{idx}.png")
+        path = os.path.join(output_dir, f"chapter_{i}.png")
         image.save(path)
-        print(f"Saved image: {path}")
+        print(f"Saved image: {path} - {desc}")
 
 # ================================
-# 4. Main Flow
+# 5. Main Flow
 # ================================
-def main():
-    start = input("Enter the story beginning: ")
-    full_story = generate_full_story(start)
-    print("\nFull story:\n", full_story)
-
-    chapters = split_into_chapters(full_story)
-    descriptions = generate_scene_descriptions(chapters)
-    print("\nScene descriptions:")
-    for idx, s in enumerate(descriptions, start=1):
-        print(f"{idx}. {s}")
-
-    generate_comic_images(descriptions)
-    print("\nAll images saved in 'comic_images/'")
-
 if __name__ == "__main__":
-    main()
+    start = input("Enter the story beginning: ")
+    entries = generate_chapters_and_descriptions(start)
+    print("\nGenerated chapters and descriptions:")
+    for i, e in enumerate(entries, start=1):
+        print(f"{i}. {e['chapter']}\n   -> {e['description']}")
+    print("\nGenerating images...")
+    generate_comic_images(entries)
+    print("\nAll images saved in 'comic_images/'")
