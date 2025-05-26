@@ -24,7 +24,7 @@ qwen_pipe = pipeline(
 # ================================
 # 2. Stable Diffusion 3.5 Setup
 # ================================
-SD_MODEL = "stabilityai/stable-diffusion-3.5"
+SD_MODEL = "stabilityai/stable-diffusion-3.5-large"
 sd_pipe = StableDiffusionPipeline.from_pretrained(
     SD_MODEL,
     torch_dtype=torch.bfloat16,
