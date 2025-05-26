@@ -96,5 +96,5 @@ if __name__ == "__main__":
     for i, e in enumerate(entries, start=1):
         print(f"{i}. {e['chapter']}\n   -> {e['description']}")
     print("\nGenerating images...")
-    generate_comic_images(entries)
+    generate_comic_images(entries, protagonist)
     print("\nAll images saved in 'comic_images/'")
