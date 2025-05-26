@@ -27,10 +27,9 @@ qwen_pipe = pipeline(
 SD_MODEL = "stabilityai/stable-diffusion-3.5"
 sd_pipe = StableDiffusionPipeline.from_pretrained(
     SD_MODEL,
-    torch_dtype="auto",
-    device_map="auto"
+    torch_dtype=torch.bfloat16,
 )
-sd_pipe.enable_attention_slicing()
+sd_pipe.to("cuda")
 
 # ================================
 # 3. Functions
