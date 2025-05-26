@@ -2,7 +2,7 @@ import os
 import textwrap
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
-from diffusers import StableDiffusionPipeline
+from diffusers import StableDiffusion3Pipeline
 
 # ================================
 # 1. Qwen 2.5-7B Instruct Setup
@@ -24,8 +24,8 @@ qwen_pipe = pipeline(
 # ================================
 # 2. Stable Diffusion 3.5 Setup
 # ================================
-SD_MODEL = "stabilityai/stable-diffusion-3.5"
-sd_pipe = StableDiffusionPipeline.from_pretrained(
+SD_MODEL = "stabilityai/stable-diffusion-3.5-large"
+sd_pipe = StableDiffusion3Pipeline.from_pretrained(
     SD_MODEL,
     torch_dtype=torch.bfloat16,
 )
