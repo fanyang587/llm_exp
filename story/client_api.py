@@ -64,44 +64,26 @@ def generate_chapters_and_descriptions(beginning: str, protagonist: str, num: in
 # ================================
 # 4. Image Generation (Disney Style)
 # ================================
-def generate_comic_images(entries, output_dir: str = "comic_images"):
+def generate_comic_images(entries, protagonist, output_dir: str = "comic_images"):
     """
     Generate and save Disney-style comic images for each entry using SD3.5.
     entries: list of {'chapter', 'description'}
     """
+    negative_prompt = "lowres, bad anatomy, bad hands, text, bad eyes, bad arms, bad legs, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, blurry, grayscale, noisy, sloppy, messy, grainy"
     os.makedirs(output_dir, exist_ok=True)
     for i, item in enumerate(entries, start=1):
         desc = item['description']
         # Append Disney style cue to the prompt
-        prompt = f"{desc}, Disney style, children's comic illustration"
+        prompt = f"Create a Disney style children's illustration on {protagonist},{desc}"
         image = sd_pipe(
             prompt,
+            negative_prompt=negative_prompt,
             num_inference_steps=28,
             guidance_scale=3.5
         ).images[0]
         path = os.path.join(output_dir, f"chapter_{i}.png")
         image.save(path)
         print(f"Saved image: {path} - {prompt}")
-
-# ================================
-# 5. Main Flow
-# ================================
-def generate_comic_images(entries, output_dir: str = "comic_images"):
-    """
-    Generate and save images for each entry using SD3.5.
-    entries: list of {'chapter', 'description'}
-    """
-    os.makedirs(output_dir, exist_ok=True)
-    for i, item in enumerate(entries, start=1):
-        desc = item['description']
-        image = sd_pipe(
-            desc,
-            num_inference_steps=28,
-            guidance_scale=7.5
-        ).images[0]
-        path = os.path.join(output_dir, f"chapter_{i}.png")
-        image.save(path)
-        print(f"Saved image: {path} - {desc}")
 
 # ================================
 # 5. Main Flow
