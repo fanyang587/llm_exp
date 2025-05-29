@@ -445,7 +445,7 @@ id_images = pipe(id_prompts, num_inference_steps=num_steps, guidance_scale=guida
                  generator=generator).images
 
 write = False
-save_dir = "comic_gen"
+save_dir = "generate_comic_baby"
 id_prompt_array = prompt_array[:id_length]
 real_prompt_array = prompt_array[id_length:]
 os.makedirs(save_dir, exist_ok=True)
