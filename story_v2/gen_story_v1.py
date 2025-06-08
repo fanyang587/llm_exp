@@ -1,10 +1,7 @@
 import os
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
-from langchain.prompts.chat import (
-    ChatPromptTemplate,
-    HumanMessagePromptTemplate,
-)
+
 os.environ["CUDA_VISIBLE_DEVICES"] = "2,3"  # Specify GPUs to use
 SCENARIO = """
 Characters: Peter is a tall guy with blond hair. Steven is a small guy with black hair.
