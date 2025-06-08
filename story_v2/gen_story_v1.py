@@ -47,7 +47,8 @@ Split the scenario in 6 parts:
 STYLE = "american comic, colored"
 #####
 # prepare the model input
-model_name = "Qwen/Qwen3-235B-A22B"
+model_name = "Qwen/Qwen3-30B-A3B"  # Specify the model name
+# model_name = "Qwen/Qwen3-235B-A22B"
 prompt = template_prompt.format(SCENARIO)
 # load the tokenizer and the model
 
