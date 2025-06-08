@@ -2,7 +2,7 @@ import os
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2,3"  # Specify GPUs to use
+# os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2,3"  # Specify GPUs to use
 SCENARIO = """
 Characters: Peter is a tall guy with blond hair. Steven is a small guy with black hair.
 Peter and Steven walk together in new york when aliens attack the city. They are afraid and try to run for their lives. The army arrive and save them.
