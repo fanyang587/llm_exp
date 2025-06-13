@@ -223,7 +223,7 @@ class StoryboardPipeline:
 if __name__ == "__main__":
     storyboard_pipe = StoryboardPipeline()
 
-    script_dict = json.load(open("assets/scripts/013420.json"))
+    script_dict = json.load(open("assets/scripts/014933.json"))
     print(script_dict)
     results = storyboard_pipe(script_dict, style_name="Comic book")
     print(results)

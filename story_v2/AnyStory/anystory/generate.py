@@ -47,7 +47,7 @@ class AnyStoryFluxPipeline:
 
     @classmethod
     def init_flux_pipline(cls, hf_flux_pipeline_path, device, torch_dtype):
-        flux_pipeline = FluxPipeline.from_pretrained(hf_flux_pipeline_path, torch_dtype=torch_dtype).to(device)
+        flux_pipeline = FluxPipeline.from_pretrained(hf_flux_pipeline_path, torch_dtype=torch_dtype, token="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").to(device)
 
         attn_procs = {}
         for name in flux_pipeline.transformer.attn_processors.keys():
