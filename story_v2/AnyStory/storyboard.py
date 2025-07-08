@@ -1,10 +1,10 @@
 import gc
 import json
-
+import os
 import numpy as np
 import torch
 from PIL import Image
-from huggingface_hub import hf_hub_download
+from huggingface_hub import hf_hub_download, login
 from torchvision import transforms
 from transformers import AutoModelForImageSegmentation
 
@@ -62,7 +62,7 @@ def apply_style(style_name, prompt):
 
 class StoryboardPipeline:
     def __init__(self, device="cuda"):
-        anystory_path = hf_hub_download(repo_id="Junjie96/AnyStory", filename="anystory_flux.bin")
+        anystory_path = hf_hub_download(repo_id="Junjie96/AnyStory", filename="anystory_flux.bin", cache_dir="/store/llm/workspace/cache/")
         story_pipe = AnyStoryFluxPipeline(
             hf_flux_pipeline_path="black-forest-labs/FLUX.1-dev",
             hf_flux_redux_path="black-forest-labs/FLUX.1-Redux-dev",
@@ -72,7 +72,7 @@ class StoryboardPipeline:
         )
 
         # load matting model
-        birefnet = AutoModelForImageSegmentation.from_pretrained('ZhengPeng7/BiRefNet', trust_remote_code=True)
+        birefnet = AutoModelForImageSegmentation.from_pretrained('ZhengPeng7/BiRefNet', trust_remote_code=True, cache_dir="/store/llm/workspace/cache/")
         birefnet.to(device)
         birefnet.eval()
 
@@ -227,6 +227,7 @@ if __name__ == "__main__":
     print(script_dict)
     results = storyboard_pipe(script_dict, style_name="Comic book")
     print(results)
-
+    save_dir = "output"
+    os.makedirs(save_dir, exist_ok=True)
     for key, result in results.items():
-        result.save(f"output_{key}.png")
+        result.save(f"{save_dir}/output_{key}.png")

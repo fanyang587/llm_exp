@@ -47,7 +47,7 @@ class AnyStoryFluxPipeline:
 
     @classmethod
     def init_flux_pipline(cls, hf_flux_pipeline_path, device, torch_dtype):
-        flux_pipeline = FluxPipeline.from_pretrained(hf_flux_pipeline_path, torch_dtype=torch_dtype, token="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").to(device)
+        flux_pipeline = FluxPipeline.from_pretrained(hf_flux_pipeline_path, torch_dtype=torch_dtype, cache_dir="/store/llm/workspace/cache/").to(device)
 
         attn_procs = {}
         for name in flux_pipeline.transformer.attn_processors.keys():
@@ -69,7 +69,8 @@ class AnyStoryFluxPipeline:
         siglip_image_encoder = SiglipVisionModel.from_pretrained(
             hf_flux_redux_path,
             subfolder="image_encoder",
-            torch_dtype=torch_dtype
+            torch_dtype=torch_dtype,
+            cache_dir="/store/llm/workspace/cache/"
         ).to(device=device)
         return siglip_image_encoder
 
@@ -83,7 +84,8 @@ class AnyStoryFluxPipeline:
             device_map=None,
             output_size=9,
             lora_rank=128,
-            lora_bias=True
+            lora_bias=True,
+            cache_dir="/store/llm/workspace/cache/"
         ).to(device)
         return redux_embedder
 
@@ -96,6 +98,7 @@ class AnyStoryFluxPipeline:
             low_cpu_mem_usage=False,
             device_map=None,
             output_size=3,
+            cache_dir="/store/llm/workspace/cache/"
         ).to(device)
         return router_embedder
 
