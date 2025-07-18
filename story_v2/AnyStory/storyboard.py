@@ -1,6 +1,7 @@
 import gc
 import json
 import os
+os.environ["HF_HOME"] = "/store/llm/workspace/cache/"
 import numpy as np
 import torch
 from PIL import Image
@@ -221,6 +222,7 @@ class StoryboardPipeline:
 
 
 if __name__ == "__main__":
+    login(token="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")
     storyboard_pipe = StoryboardPipeline()
 
     script_dict = json.load(open("assets/scripts/014933.json"))
