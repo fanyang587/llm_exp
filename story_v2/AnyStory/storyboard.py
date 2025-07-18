@@ -227,7 +227,13 @@ if __name__ == "__main__":
 
     script_dict = json.load(open("assets/scripts/014933.json"))
     print(script_dict)
-    results = storyboard_pipe(script_dict, style_name="Comic book")
+    ####### read charactor from image #######
+    alias_to_character_images = {
+        "ROLE-A": Image.open("roles/R1.png").convert("RGB"),
+        "ROLE-B": Image.open("roles/R2.jpg").convert("RGB")
+    }
+    #######
+    results = storyboard_pipe(script_dict, alias_to_character_image=alias_to_character_images, style_name="Comic book")
     print(results)
     save_dir = "output"
     os.makedirs(save_dir, exist_ok=True)
