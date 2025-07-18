@@ -235,7 +235,7 @@ if __name__ == "__main__":
     #######
     results = storyboard_pipe(script_dict, alias_to_character_image=alias_to_character_images, style_name="Comic book")
     print(results)
-    save_dir = "output"
+    save_dir = "output_image"
     os.makedirs(save_dir, exist_ok=True)
     for key, result in results.items():
         result.save(f"{save_dir}/output_{key}.png")
